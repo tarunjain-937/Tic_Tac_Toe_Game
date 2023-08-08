@@ -13,7 +13,8 @@ class _GamePadState extends State<GamePad> {
   int filledBoxes=0;
   String playerTurn="O";
   bool oTurn =true;//first player is "o"
-List<String> displayXorO=["","","","","","","","",""];
+  List<String> displayXorO=["","","","","","","","",""];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,16 +77,25 @@ List<String> displayXorO=["","","","","","","","",""];
                         ),
                         child: Padding(
                           padding:  EdgeInsets.all(8.0),
-                          child: Center(child: Text(displayXorO[index],style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 40),)),
+                          child: Center(child: Text(displayXorO[index],style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 50),)),
                         ),
                       ),
                     );
                   },),
             ),
             SizedBox(height: 20,),
-            ElevatedButton(onPressed: (){
-              resetGame();
-            }, child: Text("Reset Game",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 24),)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(onPressed: (){
+                  resetGame();
+                }, child: Text("Reset Game",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 24),)),
+
+                ElevatedButton(onPressed: (){
+                  clearBoard();
+                }, child: Text("Play Again",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 24),)),
+              ],
+            ),
             SizedBox(height: 20,),
           ],
         ),
@@ -95,17 +105,23 @@ List<String> displayXorO=["","","","","","","","",""];
 
   void tapped(int index){
     setState(() {
+      // after each successful attempt player changes
      if(oTurn && displayXorO[index]==""){
        displayXorO[index] = "O";
        filledBoxes++;
        playerTurn="X";
+       //current player is "O" next player is "X"
+       oTurn=false;
+       checkWinner();
      }
      else if(!oTurn && displayXorO[index]==""){
        displayXorO[index] = "X";
        filledBoxes++;
-     playerTurn="O";}
-     oTurn=!oTurn;// second player is "X"
-      checkWinner();
+       playerTurn="O";
+       // current player is "X" next player is "O"
+       oTurn=true;
+       checkWinner();
+     }
     });
   }
 
@@ -183,13 +199,14 @@ List<String> displayXorO=["","","","","","","","",""];
   }
 
   void clearBoard() {
-    setState(() {
-      for(int i = 0; i < 9; i++)
-        displayXorO[i] = "";
-      playerTurn="O";
-    });
-    oTurn=true;// o's turn
-    filledBoxes=0;
+   if(filledBoxes!=0){
+     setState(() {
+       for(int i = 0; i < 9; i++){displayXorO[i] = "";}
+       playerTurn="O";
+     });
+     oTurn=true;// o's turn
+     filledBoxes=0;
+   }
   }
 
   void resetGame(){
@@ -202,5 +219,4 @@ List<String> displayXorO=["","","","","","","","",""];
     oTurn=true;// o's turn
     filledBoxes=0;
   }
-
 }
